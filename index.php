@@ -18,7 +18,7 @@
 
 <div class="element2">
 <div class="form";">
-	<p><h3>Please enter your information before uploading your file</h3></p>
+	<p><h3>Please enter your information before uploading your picture</h3></p>
 	<form enctype="multipart/form-data" action="result.php" method="POST">
 	<input name="login" type="text" placeholder="Your Name" size="40"><p>
 	<input name="email" type="text" placeholder="Your Email" size="40"><p>
