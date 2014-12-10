@@ -1,18 +1,20 @@
 #!/bin/bash
 # The shell script has a usage pattern provide the data before hand and then reference it.
-#example ./Clouet-Arthur-ma3.sh ArthurLBSouthAm ArthurSouthAmKey ArthurInstance 4 Arthur_Security   
-# In this shell script then value $1  would be the first argument about...ArthurLBSouthAm
-# $2 would reference the second value ArthurSouthAmKey and so forth...
+#example ./Clouet-Arthur-FA5.sh ArthurLBEU ArthurEUKey ArthurInstance 4 Arthur_Security Arthur_Role   
+# In this shell script then value $1  would be the first argument about...ArthurLBEU
+# $2 would reference the second value ArthurEUKey and so forth...
 
 ELBNAME=$1
 KEYPAIR=$2
 CLIENT_TOKENS=$3
 N_INSTANCES=$4
 SECURITY_GROUP_NAME=$5
+IAM_ROLE_NAME=$6
 
-if [ $# != 5 ]
+
+if [ $# != 6 ]
   then 
-  echo "This script needs 5 arguments/variables to run; ELB-NAME, KEYPAIR, CLIENT_TOKENS, NUMBER OF INSTANCES, and SECURITY_GROUP_NAME"
+  echo "This script needs 6 arguments/variables to run; ELB-NAME, KEYPAIR, CLIENT_TOKENS, NUMBER OF INSTANCES, SECURITY_GROUP_NAME and IAM_ROLE_NAME"
 else
 
 #Step 1: Create a VPC with a /28 cidr block (see the aws example) - assign the vpc-id to a variable  you can awk column $6 on the --output=text to get the value
@@ -69,7 +71,7 @@ echo -e "\nFinished ELB health check and sleeping 30 seconds"
 for i in {0..25}; do echo -ne '.'; sleep 1;done
 
 #Step 8: Here is where we launch our instances, provide the VPC configuration, provide client-tokens, and provide the user-data via the file:// handler setup-MA3.sh
-aws ec2 run-instances --image-id ami-b83c0aa5 --count $N_INSTANCES --instance-type t2.micro --key-name $KEYPAIR --subnet-id $subnet_id --security-group-ids $group_id --client-token $CLIENT_TOKENS --iam-instance-profile Name=MA4Role --block-device-mappings '{"DeviceName": "/dev/xvdb", "Ebs": {"VolumeSize": 10}}' --user-data file://setup-MA4.sh --output=table
+aws ec2 run-instances --image-id ami-b83c0aa5 --count $N_INSTANCES --instance-type t2.micro --key-name $KEYPAIR --subnet-id $subnet_id --security-group-ids $group_id --client-token $CLIENT_TOKENS --iam-instance-profile Name=$IAM_ROLE_NAME --block-device-mappings '{"DeviceName": "/dev/xvdb", "Ebs": {"VolumeSize": 10}}' --user-data file://setup-FA5.sh --output=table
  
 echo -e "\nFinished launching EC2 Instances and sleeping 60 seconds"
 for i in {0..60}; do echo -ne '.'; sleep 1;done
@@ -101,6 +103,6 @@ for i in {0..180}; do echo -ne '.'; sleep 1;done
 
 
 #Last Step
-#firefox $ELBURL &
+firefox $ELBURL &
 
 fi  #End of if statement
